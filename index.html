@@ -3,14 +3,14 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <link rel="shortcut icon" href="static/img/favicon-96x96.png" type="image/x-icon">
-    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js"></script>-->
-    <title>Multiplayer Tank Demo</title>
+    <title>Multiplayer Tank Demo with Socket.io</title>
     <style>
       canvas {
-        width: 800px;
+        width: 1000px;
         height: 600px;
         border: 1px solid black;
         margin: auto; 
+        margin-top: 30px;
         display: block;
       }
       body {
@@ -23,215 +23,36 @@
         text-align: center;
         margin-bottom: 30px;
       }
+      .footer_text A {
+        text-decoration: none;
+      }
+      .footer_text A:visited {
+        text-decoration: none;
+      }
     </style>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>-->
-    <script src="/static/socket.io.js"></script>
+    <script type="text/javascript" src="/static/socket.io.js"></script>
+    <script type="text/javascript" src="/static/howler.min.js"></script>
   </head>
   <body>
-    <div style="text-align: center; ">
-      <h4>Simple Multiplayer Tank Game with Socket.io</h3>
-      <h4><i class="fas fa-gamepad"></i> AWSD to move, arrow-keys for direction, spacebar to fire!</h3>
-      <h4>On death, refresh page to play again!</h3>
-    </div>
-    <canvas id="canvas"></canvas>
 
+    <canvas id="canvas"></canvas>
+    <div style="text-align: center; ">
+      <h1 style="color: red;">!!!DEBUG MODE!!!</h3>
+      <!-- <h4>Simple Multiplayer Tank Game with Socket.io</h3> -->
+      <p><i class="fas fa-gamepad"></i> A-W-S-D to move, arrow-keys for direction, spacebar to fire, refresh to play again!</p>
+      <!-- <h4>On death, refresh page to play again!</h3> -->
+    </div>
     <footer class="footer_text">
-      <p>A JJB production. Find me on <a target="_blank" href="https://wyqian1027.github.io/public/">GitHub</a></p>
+      <!-- <p>A JJB production.</p> -->
+      <p>A JJB production. <a target="_blank" href="https://github.com/wyqian1027/socket-io-game">GitHub</a></p>
+      <p>Supported by <a target="_blank" href="https://nodejs.org/en/">Node.js</a>, <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API">Canvas API</a>, and <a target="_blank" href="https://socket.io/">Socket.IO</a></p>
     </footer>
   </body>
   
   
-  <script src="/static/game.js"></script>
-<!--<script type="text/paperscript" canvas="canvas" data-paper-ignore="true">-->
+  <script canvas="canvas" type="text/javascript" src="/static/game.js"></script>
+<!--   <script canvas="canvas" type="text/javascript" src="/static/sound.js"></script>
+ -->
 
-<!--	var keyData = {-->
-<!--		q: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/bubbles.mp3']-->
-<!--			}),-->
-<!--			color: '#1abc9c'-->
-<!--		},-->
-<!--		w: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/clay.mp3']-->
-<!--			}),-->
-<!--			color: '#2ecc71'-->
-<!--		},-->
-<!--		e: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/confetti.mp3']-->
-<!--			}),-->
-<!--			color: '#3498db'-->
-<!--		},-->
-<!--		r: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/corona.mp3']-->
-<!--			}),-->
-<!--			color: '#9b59b6'-->
-<!--		},-->
-<!--			t: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/dotted-spiral.mp3']-->
-<!--			}),-->
-<!--			color: '#34495e'-->
-<!--		},-->
-<!--		y: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/flash-1.mp3']-->
-<!--			}),-->
-<!--			color: '#16a085'-->
-<!--		},-->
-<!--		u: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/flash-2.mp3']-->
-<!--			}),-->
-<!--			color: '#27ae60'-->
-<!--		},-->
-<!--		i: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/flash-3.mp3']-->
-<!--			}),-->
-<!--			color: '#2980b9'-->
-<!--		},-->
-<!--		o: {-->
-<!--			sound: new Howl({-->
-<!--			src: ['sounds/glimmer.mp3']-->
-<!--			}),-->
-<!--			color: '#8e44ad'-->
-<!--		},-->
-<!--		p: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/moon.mp3']-->
-<!--			}),-->
-<!--			color: '#2c3e50'-->
-<!--		},-->
-<!--		a: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/pinwheel.mp3']-->
-<!--			}),-->
-<!--			color: '#f1c40f'-->
-<!--		},-->
-<!--		s: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/piston-1.mp3']-->
-<!--			}),-->
-<!--			color: '#e67e22'-->
-<!--		},-->
-<!--		d: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/piston-2.mp3']-->
-<!--			}),-->
-<!--			color: '#e74c3c'-->
-<!--		},-->
-<!--		f: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/prism-1.mp3']-->
-<!--			}),-->
-<!--			color: '#95a5a6'-->
-<!--		},-->
-<!--		g: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/prism-2.mp3']-->
-<!--			}),-->
-<!--			color: '#f39c12'-->
-<!--		},-->
-<!--		h: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/prism-3.mp3']-->
-<!--			}),-->
-<!--			color: '#d35400'-->
-<!--		},-->
-<!--		j: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/splits.mp3']-->
-<!--			}),-->
-<!--			color: '#1abc9c'-->
-<!--		},-->
-<!--		k: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/squiggle.mp3']-->
-<!--			}),-->
-<!--			color: '#2ecc71'-->
-<!--		},-->
-<!--		l: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/strike.mp3']-->
-<!--			}),-->
-<!--			color: '#3498db'-->
-<!--		},-->
-<!--		z: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/suspension.mp3']-->
-<!--			}),-->
-<!--			color: '#9b59b6'-->
-<!--		},-->
-<!--		x: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/timer.mp3']-->
-<!--			}),-->
-<!--			color: '#34495e'-->
-<!--		},-->
-<!--		c: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/ufo.mp3']-->
-<!--			}),-->
-<!--			color: '#16a085'-->
-<!--		},-->
-<!--		v: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/veil.mp3']-->
-<!--			}),-->
-<!--			color: '#27ae60'-->
-<!--		},-->
-<!--		b: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/wipe.mp3']-->
-<!--			}),-->
-<!--			color: '#2980b9'-->
-<!--		},-->
-<!--		n: {-->
-<!--			sound: new Howl({-->
-<!--			src: ['sounds/zig-zag.mp3']-->
-<!--			}),-->
-<!--			color: '#8e44ad'-->
-<!--		},-->
-<!--		m: {-->
-<!--			sound: new Howl({-->
-<!--	  		src: ['sounds/moon.mp3']-->
-<!--			}),-->
-<!--			color: '#2c3e50'-->
-<!--		}-->
-<!--	}-->
-
-<!--	var circles = [];-->
-
-<!--	function onKeyDown(event) {-->
-<!--		console.log(event.key);-->
-<!--		if (keyData[event.key]){-->
-
-<!--			var maxPoint = new Point(view.size.width, view.size.height);-->
-<!--			var randomPoint = Point.random();-->
-<!--			var point = maxPoint* randomPoint;-->
-<!--			console.log(maxPoint);-->
-<!--			var newCircle = new Path.Circle(point, 300);-->
-<!--			newCircle.fillColor = keyData[event.key].color;-->
-<!--			keyData[event.key].sound.play();-->
-			
-<!--			circles.push(newCircle);-->
-<!--		}-->
-
-<!--	}-->
-
-<!--	function onFrame(event){-->
-<!--		for (var i=0; i < circles.length; i++){-->
-<!--			circles[i].fillColor.hue += 1;-->
-<!--			circles[i].scale(.91);-->
-<!--			if (circles[i].area < 20){-->
-<!--				circles[i].remove();-->
-<!--				circles.splice(i,1);-->
-<!--				console.log(circles);-->
-<!--			}-->
-<!--		}-->
-<!--	}	-->
-<!--	</script>-->
 </html>
