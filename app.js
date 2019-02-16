@@ -37,6 +37,7 @@ var SPAWN_DIST = blastRadius*3;
 var rockWidth = 10;
 var rockCollision = 20;
 var MAP_NAME = 'first';
+var tankDim = 22;
 
 
 var gameMaps = {
@@ -44,6 +45,7 @@ var gameMaps = {
         [150, 400, 8, 8],
         [780, 100, 8, 8],
         [780, 400, 8, 8]],
+  second: [[400, 200, 2, 30]],
 };
 
 var generateObstacle = function(mapName){
@@ -59,11 +61,12 @@ var generateObstacle = function(mapName){
 
 var currentObstacle = generateObstacle(MAP_NAME);
 
-// console.log(currentObstacle);
+console.log(currentObstacle);
 var updateBullets = function(){
   for (var id in players) {
     var player = players[id];
     if (player.display == true && player.bulletDir != '' && player.fire == true){
+      //update bullet location
       var bdir = players[id].bulletDir;
       var spd = players[id].bullet[2];
       if (bdir === 'left'){
@@ -82,7 +85,7 @@ var updateBullets = function(){
             (Math.abs(player.bullet[1] - currentObstacle[i][1]) <= currentObstacle[i][3])) {
             player.bulletDir = '';
             player.fire = false;  
-            console.log("hit obstacle!");
+            // console.log("hit obstacle!");
             return true;
           }
       }
@@ -168,6 +171,17 @@ var reachMaxTankCount = function(){
   return false;
 }
      
+var isMoveAllowed = function(x, y) {
+  for (var i=0; i<currentObstacle.length; i++){
+    if ((Math.abs(x - currentObstacle[i][0]) <= currentObstacle[i][2]+tankDim) &&
+      (Math.abs(y - currentObstacle[i][1]) <= currentObstacle[i][3]+tankDim)) {
+      return false;
+      // console.log("move not allowed");
+    }
+  }
+  return true;
+}
+
 var numPlayers = -1;
 io.on('connection', function(socket) {
   console.log('user connected.')
@@ -176,7 +190,7 @@ io.on('connection', function(socket) {
     var locs = getLiveTanks();
     var posX = Math.floor(Math.random()*(CANVAS_WIDTH-10))+5;
     var posY = Math.floor(Math.random()*(CANVAS_HEIGHT-10))+5;
-    while (isValid(posX, posY, locs) == false){
+    while (isValid(posX, posY, locs) == false || isMoveAllowed(posX, posY) == false){
       posX = Math.floor(Math.random()*(CANVAS_WIDTH-10))+5;
       posY = Math.floor(Math.random()*(CANVAS_HEIGHT-10))+5;
       // console.log("checking");
@@ -227,19 +241,19 @@ io.on('connection', function(socket) {
     //   player.y += 5;
     // }
     //periodic
-    if (data.left) {
+    if (data.left && isMoveAllowed(player.x-5, player.y)) {
       player.x -= 5;
       if (player.x < 0) player.x = CANVAS_WIDTH;
     }
-    if (data.up) {
+    if (data.up && isMoveAllowed(player.x, player.y-5)) {
       player.y -= 5;
       if (player.y < 0) player.y = CANVAS_HEIGHT;
     }
-    if (data.right) {
+    if (data.right && isMoveAllowed(player.x+5, player.y)) {
       player.x += 5;
       if (player.x > CANVAS_WIDTH) player.x = 0;
     }
-    if (data.down) {
+    if (data.down && isMoveAllowed(player.x, player.y+5)) {
       player.y += 5;
       if (player.y > CANVAS_HEIGHT) player.y = 0;
     }
@@ -254,7 +268,8 @@ io.on('connection', function(socket) {
 });
 
 setInterval(function() {
-  updateBullets();
+  players.hitObstacle = updateBullets();
+  // if (players.hitObstacle) console.log("passing msg of hitting obs to client");
   players.isCollision = collision();
   players.numPlayers = numPlayers;
   io.sockets.emit('state', players);

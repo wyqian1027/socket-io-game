@@ -7,7 +7,7 @@ canvas.height = CANVAS_HEIGHT;
 var ctx = canvas.getContext('2d');
 var circleRadius = 8;
 var boxRadius = 13;
-var gunLength = 30;
+var gunLength = 25;
 var gunWidth = 4;
 var bulletSize =3;
 var UpdateBulletCycle = 10;
@@ -19,6 +19,8 @@ var tankManLoc = circleRadius/4;
 var tankManSize = 2;
 var rockWidth = 10;
 var rockLineWidth = 3;
+var MAP_NAME = 'first';
+
 
 var movement = {
     up: false,
@@ -59,6 +61,7 @@ var gameMaps = {
         [150, 400, 8, 8],
         [780, 100, 8, 8],
         [780, 400, 8, 8]],
+  second: [[400, 200, 2, 30]],
 };
 
 var generateMap = function(mapName){
@@ -288,7 +291,7 @@ socket.on('state', function(players) {
         } 
 
         //generate map
-        generateMap("first");
+        generateMap(MAP_NAME);
               
         //display moving bullets for alive players
         if (player.display == true && player.fire == true && player.bulletDir != ''){
