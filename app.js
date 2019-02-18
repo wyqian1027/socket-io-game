@@ -12,10 +12,7 @@ var randomColor = require('randomcolor');
 app.set('port', 8080);
 app.use('/static', express.static(__dirname + '/static'));
 
-//Global
-var CANVAS_WIDTH = 1000;
-var CANVAS_HEIGHT = 600;
-var frameRate = 80;
+
 
 // Routing
 app.get('/', function(req, res) {
@@ -28,24 +25,36 @@ server.listen(8080, function() {
   console.log('Starting server on port 8080');
 });
 
-// Add the WebSocket handlers
+//Global parameters
+var CANVAS_WIDTH = 1000;
+var CANVAS_HEIGHT = 600;
+var frameRate = 60;
+
+var cyclic = false;
 var players = {};
 var bulletSpeed = 12; 
 var blastRadius = 22;
 var MAX_LIVE_TANK_COUNT = 10;
 var SPAWN_DIST = blastRadius*3;
-var rockWidth = 10;
+// var rockWidth = 10;
 var rockCollision = 20;
-var MAP_NAME = 'first';
+var MAP_NAME = 'test';
 var tankDim = 22;
 
 
+
 var gameMaps = {
+  none: [[]],
   first: [[150, 100, 8, 8],
         [150, 400, 8, 8],
         [780, 100, 8, 8],
         [780, 400, 8, 8]],
   second: [[400, 200, 2, 30]],
+  simple: [[300, 300, 20, 20]],
+  test: [[100, 100, 100, 100],
+        [CANVAS_WIDTH-200, 100, 100, 100],
+        [100, CANVAS_HEIGHT-200, 100, 100],
+        [CANVAS_WIDTH-200, CANVAS_HEIGHT-200, 100, 100]],
 };
 
 var generateObstacle = function(mapName){
@@ -54,7 +63,7 @@ var generateObstacle = function(mapName){
   for (var i=0; i<coords.length; i++){
     var startX = coords[i][0];
     var startY = coords[i][1];
-    mapGridPoints.push([startX+coords[i][2]/2*rockWidth, startY+coords[i][3]/2*rockWidth, coords[i][2]/2*rockWidth, coords[i][3]/2*rockWidth]);
+    mapGridPoints.push([startX+coords[i][2]/2, startY+coords[i][3]/2, coords[i][2]/2, coords[i][3]/2]);
   }
   return mapGridPoints;
 }
@@ -182,7 +191,7 @@ var isMoveAllowed = function(x, y) {
   return true;
 }
 
-var numPlayers = -1;
+var numPlayers = 0;
 io.on('connection', function(socket) {
   console.log('user connected.')
   numPlayers += 1;
@@ -228,34 +237,37 @@ io.on('connection', function(socket) {
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
     //with boundary
-    // if (data.left && player.x>=0) {
-    //   player.x -= 5;
-    // }
-    // if (data.up && player.y>=0) {
-    //   player.y -= 5;
-    // }
-    // if (data.right && player.x<=CANVAS_WIDTH-5) {
-    //   player.x += 5;
-    // }
-    // if (data.down && player.y<=CANVAS_HEIGHT-5) {
-    //   player.y += 5;
-    // }
+    if (!cyclic){
+      if (data.left && player.x>=25 && isMoveAllowed(player.x-5, player.y)) {
+        player.x -= 5;
+      }
+      if (data.up && player.y>=25 && isMoveAllowed(player.x, player.y-5)) {
+        player.y -= 5;
+      }
+      if (data.right && player.x<=CANVAS_WIDTH-25 && isMoveAllowed(player.x+5, player.y)) {
+        player.x += 5;
+      }
+      if (data.down && player.y<=CANVAS_HEIGHT-25 && isMoveAllowed(player.x, player.y+5)) {
+        player.y += 5;
+      }
+    } else {
     //periodic
-    if (data.left && isMoveAllowed(player.x-5, player.y)) {
-      player.x -= 5;
-      if (player.x < 0) player.x = CANVAS_WIDTH;
-    }
-    if (data.up && isMoveAllowed(player.x, player.y-5)) {
-      player.y -= 5;
-      if (player.y < 0) player.y = CANVAS_HEIGHT;
-    }
-    if (data.right && isMoveAllowed(player.x+5, player.y)) {
-      player.x += 5;
-      if (player.x > CANVAS_WIDTH) player.x = 0;
-    }
-    if (data.down && isMoveAllowed(player.x, player.y+5)) {
-      player.y += 5;
-      if (player.y > CANVAS_HEIGHT) player.y = 0;
+      if (data.left && isMoveAllowed(player.x-5, player.y)) {
+        player.x -= 5;
+        if (player.x < 0) player.x = CANVAS_WIDTH;
+      }
+      if (data.up && isMoveAllowed(player.x, player.y-5)) {
+        player.y -= 5;
+        if (player.y < 0) player.y = CANVAS_HEIGHT;
+      }
+      if (data.right && isMoveAllowed(player.x+5, player.y)) {
+        player.x += 5;
+        if (player.x > CANVAS_WIDTH) player.x = 0;
+      }
+      if (data.down && isMoveAllowed(player.x, player.y+5)) {
+        player.y += 5;
+        if (player.y > CANVAS_HEIGHT) player.y = 0;
+      }
     }
   });
   socket.on('gun', function(dir){

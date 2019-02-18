@@ -17,9 +17,12 @@ var trailWidth = 6;
 var trailLength = trailWidth+boxRadius;
 var tankManLoc = circleRadius/4;
 var tankManSize = 2;
-var rockWidth = 10;
+// var rockWidth = 10;
 var rockLineWidth = 3;
-var MAP_NAME = 'first';
+var MAP_NAME = 'test';
+var grassHeight = 10;
+var grassWidth = 5;
+
 
 
 var movement = {
@@ -45,32 +48,47 @@ var soundData = {
 
 };
 
-var drawRockBlock = function(x, y, numX, numY){
+// var drawRockBlock = function(x, y, numX, numY){
 
-  ctx.lineWidth = rockLineWidth;
-  for (var i=0; i< numX; i++){
-    for (var j=0; j<numY; j++){
-      drawrocks(x+i*rockWidth,y+j*rockWidth);
-    }
-  }
-  ctx.lineWidth = 1;
-}
+//   ctx.lineWidth = rockLineWidth;
+//   for (var i=0; i< numX; i++){
+//     for (var j=0; j<numY; j++){
+//       drawrocks(x+i*rockWidth,y+j*rockWidth);
+//     }
+//   }
+//   ctx.lineWidth = 1;
+// }
 
 var gameMaps = {
+  none: [[]],
   first: [[150, 100, 8, 8],
         [150, 400, 8, 8],
         [780, 100, 8, 8],
         [780, 400, 8, 8]],
   second: [[400, 200, 2, 30]],
+  simple: [[300, 300, 20, 20]],
+  test: [[100, 100, 100, 100],
+        [CANVAS_WIDTH-200, 100, 100, 100],
+        [100, CANVAS_HEIGHT-200, 100, 100],
+        [CANVAS_WIDTH-200, CANVAS_HEIGHT-200, 100, 100]],
 };
 
 var generateMap = function(mapName){
   var coords = gameMaps[mapName];
+  ctx.lineWidth = rockLineWidth;
   for (var i=0; i<coords.length; i++){
-    drawRockBlock(coords[i][0], coords[i][1], coords[i][2], coords[i][3]);
+    drawrock(coords[i][0], coords[i][1], coords[i][2], coords[i][3]);
   }
+  ctx.lineWidth = 1;
 }
+var grassLocations = [[100, 50], [300, 600], [250, 250], [500, 500], [900, 550], [630, 100],
+                     [500, 500], [50, 500], [400, 590], [890, 300]];
 
+var addGrass = function(numGrass){
+    grassLocations.forEach(function(el){
+        drawGrass(el[0], el[1]);
+    });
+}
 
 
 
@@ -184,14 +202,27 @@ var drawBullet = function(x, y){
   ctx.fill();
 }
 
-var drawrocks = function(x, y){
+var drawrock = function(x, y, rockWidth, rockWidth){
   ctx.beginPath();
   ctx.rect(x, y, rockWidth, rockWidth);
-  ctx.fillStyle = "grey";
+  ctx.fillStyle = "#4C5159";
   ctx.stroke();
   ctx.fill();
 }
 
+var drawGrass = function(x, y){
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y-grassHeight);
+    ctx.lineTo(x+grassWidth, y-grassHeight/2);
+    ctx.lineTo(x+2*grassWidth, y-grassHeight);
+    ctx.lineTo(x+3*grassWidth, y-grassHeight/2);
+    ctx.lineTo(x+4*grassWidth, y-grassHeight);
+    ctx.lineTo(x+4*grassWidth, y);
+	ctx.fillStyle = "#1EAB45";
+    ctx.fill();
+    ctx.closePath();
+}
 
 var drawTank = function(x, y, dir, color, armor){
   //tank trail
@@ -285,13 +316,20 @@ socket.on('state', function(players) {
             drawArmor(players[socket.id].armor);
             drawInfo(players.numPlayers);
         }
+
+        //generate map
+        generateMap(MAP_NAME);
+
+        //add grass:
+        addGrass(10);
+        
         //display tanks
         if (player.display){
             drawTank(player.x, player.y, player.gun, player.color, player.armor);
         } 
 
-        //generate map
-        generateMap(MAP_NAME);
+
+
               
         //display moving bullets for alive players
         if (player.display == true && player.fire == true && player.bulletDir != ''){
