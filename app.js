@@ -4,7 +4,7 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 var app = express();
-var server = http.Server(app);
+var server = http.createServer(app);
 var io = socketIO(server);
 var randomColor = require('randomcolor');
 
@@ -18,12 +18,17 @@ app.use('/static', express.static(__dirname + '/static'));
 app.get('/', function(req, res) {
 //   res.sendFile(path.join(__dirname, 'index.html'));
   res.sendFile(path.join(__dirname, 'index.html'));
+  // res.render("landing")
 });
 
 // Starts the server.
 server.listen(8080, function() {
   console.log('Starting server on port 8080');
 });
+
+// app.listen(process.env.PORT, process.env.IP, function(){
+//   console.log('Starting server...');
+// })
 
 //Global parameters
 var CANVAS_WIDTH = 1000;
@@ -192,6 +197,7 @@ var isMoveAllowed = function(x, y) {
 }
 
 var numPlayers = 0;
+
 io.on('connection', function(socket) {
   console.log('user connected.')
   numPlayers += 1;
