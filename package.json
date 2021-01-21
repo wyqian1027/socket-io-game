@@ -14,6 +14,6 @@
     "howler": "^2.1.1",
     "nodemon": "^1.18.10",
     "randomcolor": "^0.5.4",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.4.0"
   }
 }
